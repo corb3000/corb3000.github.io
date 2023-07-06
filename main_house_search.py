@@ -48,6 +48,11 @@ def select_data():
     bed = Element('min_bed')
     cty = Element('choose_county')
     county = cty.element.selectedOptions
+    ob = Element('orderBy')
+    print(type(ob))
+    orderBy = ob.value
+    print(orderBy)
+
 
     # c=county.element.selectedOptions
     if county.length == 0:
@@ -55,9 +60,10 @@ def select_data():
     cl= []
     for i in range(county.length):
         cl.append(county.item(i).value)
-    sql = 'SELECT * FROM house WHERE county IN ({}) AND description LIKE ? AND price BETWEEN ? AND ? AND bedrooms > ? AND density_3k < ? '.format(','.join(['?']*len(cl)))
+    sql = 'SELECT * FROM house WHERE county IN ({}) AND description LIKE ? AND price BETWEEN ? AND ? AND bedrooms > ? AND density_3k < ? ORDER BY {} '.format(','.join(['?']*len(cl)), orderBy)
     cl = cl+[search_ , min_price.value, max_price.value, bed.value, den.value]
     cl = tuple(cl)
+    print(cl)
     cur.execute(sql, cl)
      
     rows_all = cur.fetchall()
