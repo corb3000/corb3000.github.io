@@ -30,7 +30,8 @@ def get_house_data():
     county = cur.fetchall()
     countySel = document.getElementById('daySelect')
     d = Element("choose_county")
-    d.element.innerHTML =f'<option value="all">all</option>'
+    d.element.innerHTML = ""
+    # d.element.innerHTML =f'<option value="all">all</option>'
     for i in county:
         d.element.innerHTML += f'<option value="{i[0]}">{i[0]}</option>'
     
@@ -45,16 +46,20 @@ def select_data():
     min_price = Element('min_price')
     max_price = Element('max_price')
     bed = Element('min_bed')
-    county = Element('choose_county')
+    cty = Element('choose_county')
+    county = cty.element.selectedOptions
 
-    cur.execute("""SELECT * FROM house 
-        WHERE description LIKE ? 
-        AND price > ?
-        AND price < ?
-        AND bedrooms > ?
-        AND density_3k < ? 
-        """,
-        (search_ , min_price.value, max_price.value, bed.value, den.value,))
+    # c=county.element.selectedOptions
+    if county.length == 0:
+        county = cty.element.options
+    cl= []
+    for i in range(county.length):
+        cl.append(county.item(i).value)
+    sql = 'SELECT * FROM house WHERE county IN ({}) AND description LIKE ? AND price BETWEEN ? AND ? AND bedrooms > ? AND density_3k < ? '.format(','.join(['?']*len(cl)))
+    cl = cl+[search_ , min_price.value, max_price.value, bed.value, den.value]
+    cl = tuple(cl)
+    cur.execute(sql, cl)
+     
     rows_all = cur.fetchall()
     if rows_all:
         houses.clear()
@@ -85,7 +90,7 @@ def display_house():
     Element('address').write(house[7])
     Element('price').write(f"  ${int(house[6])}")
     Element('bed').write(int(house[1]))
-    Element('bath').write(int(house[2]))
+    # Element('bath').write(int(house[2]))
     Element('county').write(house[14])
     Element('type').write(house[4])
     Element('den_1').write(int(house[15]))
