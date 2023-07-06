@@ -99,6 +99,7 @@ def display_house():
     # Element('bath').write(int(house[2]))
     Element('county').write(house[14])
     Element('type').write(house[4])
+    # Element('listingUpdateDate').write(house[11])
     Element('den_1').write(int(house[15]))
     Element('den_2').write(int(house[16]))
     Element('den_5').write(int(house[17]))
