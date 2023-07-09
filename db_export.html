@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>File System Access API Examples</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.03.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2023.03.1/pyscript.js"></script>
+      <style>
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 22px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      This example shows how to call the File System Access APIs. These APIs permit local file system access.
+    </p>
+    <div id="output"></div>
+    <br />
+    <button class="button" type="button" id="file_save">Write Local File</button>
+    <br />
+    <br />
+    <h4>File Contents:</h4>
+    <textarea id="content" name="content" rows="10" cols="80">
+    Place data here to save to a local file.
+    </textarea>
+    <py-config>
+      [[fetch]]
+      files = ["./houses.db"]
+    </py-config>
+    <py-script output="output">
+import asyncio
+import sys
+import io
+from js import alert, document, Object, window, console, Blob
+from pyodide.ffi import create_proxy, to_js
+import shutil
+
+def file_info():
+  file_in = open("./houses.db", 'rb')
+  data = file_in.read()
+
+  print(type(data))
+  # print(data)
+  file_in.close()
+  
+
+async def file_save(event):
+	# Note: print() does not work in event handlers
+  try:
+    options = {
+			"startIn": "documents",
+			"suggestedName": "testfile.db"
+		}
+
+    fileHandle = await window.showSaveFilePicker(Object.fromEntries(to_js(options)))
+  except Exception as e:
+    console.log('Exception: ' + str(e))
+    return
+ 
+  data = file_in.read()
+  b = Blob.new([data], {type: 'binary'} )
+  file = await fileHandle.createWritable()
+  await file.write(b)
+  await file.close()
+ 
+  return
+
+def setup_button():
+	# Create a Python proxy for the callback function
+	file_save_proxy = create_proxy(file_save)
+
+	# Set the listener to the callback
+	document.getElementById("file_save").addEventListener("click", file_save_proxy, False)
+
+setup_button()
+file_info()
+    </py-script>
+  </body>
+</html>
