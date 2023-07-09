@@ -100,7 +100,7 @@ def display_house():
     Element('den_1').write(int(house[15]))
     Element('den_2').write(int(house[16]))
     Element('den_5').write(int(house[17]))
-    Element("description").write(f"description: {description}")
+    Element("description").write(description)
     document.querySelector("img").setAttribute("src", url1)
     link = f"https://www.rightmove.co.uk{house[10]}"
     l = document.getElementById("property")
