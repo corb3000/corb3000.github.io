@@ -76,6 +76,7 @@ def display_house():
     # global houses
     global house_count
     global image_number
+    house_images.clear()
     Element("house_count").write(house_count + 1)
     Element("house_len").write(len(houses))
     house_count = max(house_count,0)
